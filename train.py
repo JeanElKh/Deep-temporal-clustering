@@ -127,34 +127,40 @@ def training_function(args, verbose=True):
 
 
 if __name__ == "__main__":
+    avg_roc = 0
+    n_trials = 10
+    for i in range(n_trials):
+        print('_______________TRIAL NUMBER {}_______________'.format(i+1))
+        parser = get_arguments()
+        args = parser.parse_args()
+        args.path_data = args.path_data.format(args.dataset_name)
+        if not os.path.exists(args.path_data):
+            os.makedirs(args.path_data)
 
-    parser = get_arguments()
-    args = parser.parse_args()
-    args.path_data = args.path_data.format(args.dataset_name)
-    if not os.path.exists(args.path_data):
-        os.makedirs(args.path_data)
+        path_weights = args.path_weights.format(args.dataset_name)
+        if not os.path.exists(path_weights):
+            os.makedirs(path_weights)
 
-    path_weights = args.path_weights.format(args.dataset_name)
-    if not os.path.exists(path_weights):
-        os.makedirs(path_weights)
+        args.path_weights_ae = os.path.join(path_weights, "autoencoder_weight.pth")
+        args.path_weights_main = os.path.join(
+            path_weights, "full_model_weigths.pth"
+        )
 
-    args.path_weights_ae = os.path.join(path_weights, "autoencoder_weight.pth")
-    args.path_weights_main = os.path.join(
-        path_weights, "full_model_weigths.pth"
-    )
+        args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        trainloader, X_scaled = get_loader(args)
+        pretrain_autoencoder(args)
 
-    trainloader, X_scaled = get_loader(args)
-    pretrain_autoencoder(args)
+        model = ClusterNet(args)
+        model = model.to(args.device)
+        loss1 = nn.MSELoss()
+        optimizer_clu = torch.optim.SGD(
+            model.parameters(), lr=args.lr_cluster, momentum=args.momentum
+        )
 
-    model = ClusterNet(args)
-    model = model.to(args.device)
-    loss1 = nn.MSELoss()
-    optimizer_clu = torch.optim.SGD(
-        model.parameters(), lr=args.lr_cluster, momentum=args.momentum
-    )
+        max_roc_score = training_function(args)
+        avg_roc += max_roc_score
 
-    max_roc_score = training_function(args)
 
-    print("maximum roc score is {}".format(max_roc_score))
+        print("maximum roc score is {}".format(max_roc_score))
+    print("average roc score is {}".format(avg_roc/n_trials))

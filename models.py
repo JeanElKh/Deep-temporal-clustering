@@ -95,7 +95,7 @@ class TAE_decoder(nn.Module):
             out_channels=self.n_hidden,
             kernel_size=10,
             stride=1,
-            padding=self.pooling // 2,
+            padding=self.pooling//2,
         )
 
     def forward(self, features):

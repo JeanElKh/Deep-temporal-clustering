@@ -18,7 +18,7 @@ def get_arguments():
     parser.add_argument(
         "--similarity",
         required=True,
-        choices=["COR", "EUC", "CID"],
+        choices=["COR", "EUC", "CID", "DTW"],
         default="COR",
         help="The similarity type",
     )

@@ -1,5 +1,5 @@
 import torch
-
+from soft_dtw import SoftDTW
 
 def compute_CE(x):
     """
@@ -7,6 +7,8 @@ def compute_CE(x):
     return : output : (n , 1)
     """
     return torch.sqrt(torch.sum(torch.square(x[:, 1:] - x[:, :-1]), dim=1))
+
+
 
 
 def compute_similarity(z, centroids, similarity="EUC"):
@@ -21,6 +23,13 @@ def compute_similarity(z, centroids, similarity="EUC"):
     """
     n_clusters, n_hidden = centroids.shape[0], centroids.shape[1]
     bs = z.shape[0]
+    
+    def dtw(z, centroids):
+        dtw = SoftDTW(gamma = 0.1, normalize = True)
+        aux = []
+        for i in range(bs):
+            aux.append([dtw(z[i].unsqueeze(1), centroids[k].unsqueeze(1)) for k in range(n_clusters)])
+        return torch.tensor(aux)
 
     if similarity == "CID":
         CE_z = compute_CE(z).unsqueeze(1)  # shape (batch_size , 1)
@@ -31,6 +40,9 @@ def compute_similarity(z, centroids, similarity="EUC"):
         CE_cen = CE_cen.expand((bs, n_clusters))  # (bs , n_clusters)
         CF = torch.max(CE_z, CE_cen) / torch.min(CE_z, CE_cen)
         return torch.transpose(mse, 0, 1) * CF
+
+    elif similarity == "DTW":
+        return dtw(z, centroids)
 
     elif similarity == "EUC":
         z = z.expand((n_clusters, bs, n_hidden))
