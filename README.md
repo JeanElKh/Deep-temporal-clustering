@@ -1,4 +1,9 @@
 # Deep-temporal-clustering pytorch implemention
+This is a fork from the repos https://github.com/HamzaG737/Deep-temporal-clustering.
+The two main changes are:
+- We Added notebooks with our experiments
+- We added the Soft-DTW as a similarity measure.
+
 A non-official pytorch implementation of the DTC model , presented in the paper :
 > Madiraju, N. S., Sadat, S. M., Fisher, D., & Karimabadi, H. (2018). Deep Temporal Clustering : Fully Unsupervised Learning of Time-Domain Features. http://arxiv.org/abs/1802.01059
 
