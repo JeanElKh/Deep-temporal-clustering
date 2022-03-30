@@ -1,5 +1,5 @@
 # Deep-temporal-clustering pytorch implemention
-This is a fork from the repos https://github.com/HamzaG737/Deep-temporal-clustering.
+This is a fork from the repos https://github.com/HamzaG737/Deep-temporal-clustering, done for the classe of Laurent Oudre, Master MVA, ENS-PS, 2022.
 The two main changes are:
 - We Added notebooks with our experiments
 - We added the Soft-DTW as a similarity measure.
